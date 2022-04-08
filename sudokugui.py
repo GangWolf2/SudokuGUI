@@ -61,10 +61,6 @@ class SudokuGUI(Frame):
 
                     # since each value of key is array, we can use built-in array methods to update dict value
                     self.usedNums[(k, l)].append(self.game.puzzle[i][j])
-        print(f'self.usedNums[(0,0)] {self.usedNums[(0,0)]} \n'
-              f'self.usedNums[(0,3)] {self.usedNums[(0,3)]} \n'
-              f'self.usedNums[(0,6)] {self.usedNums[(0,6)]} \n'
-              )
     def __draw_grid(self):
         for i in range(10):
             color = "blue" if i%3 == 0 else "gray"
@@ -140,7 +136,7 @@ class SudokuGUI(Frame):
 
 
     def __solve(self):
-        
+
         curSquare = self.__findEmpty(self.game.puzzle)
 
         if not curSquare:
@@ -149,22 +145,24 @@ class SudokuGUI(Frame):
             return True
 
         else:
-            self.row, self.col = curSquare
-            print(f'Row: {self.row}')
-            print(f'Col: {self.col}')
+            row, col = curSquare
+            #print(f'Row: {self.row}')
+            #print(f'Col: {self.col}')
 
         for i in range(1,10):
-            if self.__checkRowCol(self.game.puzzle, self.row, self.col, i):
-                        self.game.puzzle[self.row][self.col] = i
+            if self.__checkRowCol(self.game.puzzle, row, col, i):
+                        self.game.puzzle[row][col] = i
+
                         if self.__solve():
-                            print("Recursive solve call")
                             return True
-                        self.game.puzzle[self.row][self.col] = 0
-                        r = self.row - (self.row % 3)
-                        c = self.col - (self.col % 3)
-                        print(f'r value: {r}, c value: {c}')
-                        print(f'self.usedNums[(r,c)] {self.usedNums[(0, 6)]} \n')
-                        self.usedNums[(r, c)].remove(i)
+
+                        self.game.puzzle[row][col] = 0
+                        r = row - (row % 3)
+                        c = col - (col % 3)
+
+                        if i in self.usedNums[(r, c)]:
+                            self.usedNums[(r, c)].remove(i)
+
         print("Board is unsolvable")
         return False
 
@@ -179,8 +177,8 @@ class SudokuGUI(Frame):
 
     def __checkRowCol(self, board, row, col, numChosen):
         # checks row if numChosen equal to any row values
-        print(f'checkRowCol Row, Col: {row}, {col}')
-        print(f'checkRowCol numChosen: {numChosen}')
+        #print(f'checkRowCol Row, Col: {row}, {col}')
+        #print(f'checkRowCol numChosen: {numChosen}')
         for i in range(0, 9):
             if board[row][i] == numChosen:
                 #print(f' __checkRowCol Row,i value: {row,i}')
@@ -199,12 +197,10 @@ class SudokuGUI(Frame):
         #print('row, col altered')
         # checks if chosen number is in list of values mapped to current box and returns False if found
         if numChosen in self.usedNums[(row, col)]:
-            print("ILLEGAL: Same number in box")
+            #print("ILLEGAL: Same number in box")
             return False
         # if the chosen number is not found in the list of values, then it is appended to the value list and returns True
         self.usedNums[(row, col)].append(numChosen)
-        print(f'self.usedNums[(row, col)]: {self.usedNums[(row, col)]}')
-        print("Returning true")
         return True
 
     def __draw_victory(self):
